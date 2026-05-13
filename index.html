@@ -5,22 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Our Flame Sync</title>
     <style>
-        :root { --bg-color: #000; --text-color: #fff; --my-border: #8A2BE2; --her-border: #FF69B4; }
-        body.light-theme { --bg-color: #fff; --text-color: #000; }
-        body { margin: 0; padding: 0; background-color: var(--bg-color); color: var(--text-color); font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; transition: background 0.4s ease; }
+        :root { 
+            --bg-color: #000; --text-color: #fff; --my-border: #8A2BE2; --her-border: #FF69B4; 
+            --paw-pad: %23FFD700; --rat-body: %23ffffff;
+        }
+        body.light-theme { 
+            --bg-color: #fff; --text-color: #000; 
+            --paw-pad: %23FF69B4; --rat-body: %23000000;
+        }
+        body { 
+            margin: 0; padding: 0; background-color: var(--bg-color); color: var(--text-color); 
+            font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; height: 100vh; overflow: hidden; 
+            transition: background 0.4s ease; 
+        }
         .bg-pattern { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.25; pointer-events: none; }
+        
+        /* Лапки и крысы */
         body:not(.light-theme) .bg-pattern { background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform='translate(10,10)'%3E%3Ccircle cx='10' cy='10' r='5' fill='white'/%3E%3Ccircle cx='10' cy='10' r='3' fill='%23FFD700'/%3E%3Ccircle cx='6' cy='4' r='2' fill='white'/%3E%3Ccircle cx='10' cy='2' r='2' fill='white'/%3E%3Ccircle cx='14' cy='4' r='2' fill='white'/%3E%3C/g%3E%3Cg transform='translate(60,60)'%3E%3Cellipse cx='10' cy='10' rx='8' ry='5' fill='white'/%3E%3Cpath d='M18,10 Q25,5 25,15' stroke='%23FF1493' fill='none' stroke-width='1.5'/%3E%3C/g%3E%3C/svg%3E"); }
         body.light-theme .bg-pattern { background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform='translate(10,10)'%3E%3Ccircle cx='10' cy='10' r='5' fill='black'/%3E%3Ccircle cx='10' cy='10' r='3' fill='%23FF69B4'/%3E%3Ccircle cx='6' cy='4' r='2' fill='black'/%3E%3Ccircle cx='10' cy='2' r='2' fill='black'/%3E%3Ccircle cx='14' cy='4' r='2' fill='black'/%3E%3C/g%3E%3Cg transform='translate(60,60)'%3E%3Cellipse cx='10' cy='10' rx='8' ry='5' fill='black'/%3E%3Cpath d='M18,10 Q25,5 25,15' stroke='%23FF1493' fill='none' stroke-width='1.5'/%3E%3C/g%3E%3C/svg%3E"); }
+
+        .theme-toggle {
+            position: absolute; top: 20px; right: 20px; z-index: 100;
+            font-size: 24px; cursor: pointer; opacity: 0.7;
+        }
+
         .container { position: relative; z-index: 10; text-align: center; }
         .avatar { width: 95px; height: 95px; border-radius: 50%; border: 4px solid var(--her-border); box-shadow: 0 0 20px var(--her-border); }
         .me .avatar { border-color: var(--my-border); box-shadow: 0 0 25px var(--my-border); }
-        #flame { font-size: 110px; cursor: pointer; display: inline-block; transition: 0.3s; }
+        #flame { font-size: 110px; cursor: pointer; display: inline-block; transition: 0.3s; margin-top: 20px; }
         .dying { animation: pulse 2s infinite alternate; filter: grayscale(0.6); }
         @keyframes pulse { from { opacity: 0.6; transform: scale(1); } to { opacity: 1; transform: scale(1.1); } }
     </style>
 </head>
 <body>
+    <div class="theme-toggle" onclick="toggleTheme()">🌓</div>
     <div class="bg-pattern"></div>
+    
     <div class="container">
         <div style="display:flex; gap:20px; justify-content:center; margin-bottom:30px;">
             <div class="her"><img src="avatar_her.png" class="avatar"></div>
@@ -31,7 +52,6 @@
         <div style="opacity: 0.5; letter-spacing: 2px;">ОБЩАЯ СЕРИЯ</div>
     </div>
 
-    <!-- Подключаем Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
@@ -43,7 +63,7 @@
             storageBucket: "our-flame-53201.firebasestorage.app",
             messagingSenderId: "464882526164",
             appId: "1:464882526164:web:7ea6e4a6af1a1448d19841",
-            databaseURL: "https://our-flame-53201-default-rtdb.europe-west1.firebasedatabase.app/" // Проверь этот URL в консоли!
+            databaseURL: "https://our-flame-53201-default-rtdb.firebaseio.com/" 
         };
 
         const app = initializeApp(firebaseConfig);
@@ -55,47 +75,35 @@
 
         let localData = { streak: 0, lastDate: "" };
 
-        // Слушаем изменения в облаке в реальном времени
+        // Тема
+        window.toggleTheme = function() {
+            document.body.classList.toggle('light-theme');
+            localStorage.setItem('f_theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
+        };
+        if(localStorage.getItem('f_theme') === 'light') document.body.classList.add('light-theme');
+
         onValue(flameRef, (snapshot) => {
             const data = snapshot.val();
-            if (data) {
-                localData = data;
-                updateUI();
-            }
+            if (data) { localData = data; }
+            updateUI();
         });
-
-        async function sendReminder() {
-            const today = new Date().toDateString();
-            if (localStorage.getItem('sent_today') === today) return;
-            for (const id of USER_IDS) {
-                fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${id}&text=${encodeURIComponent("🚨 Огонек тухнет! Кто-то один, зажгите его! 🔥")}`);
-            }
-            localStorage.setItem('sent_today', today);
-        }
 
         function updateUI() {
             document.getElementById('counter').innerText = localData.streak;
             const today = new Date().toDateString();
             const f = document.getElementById('flame');
-            if (localData.lastDate !== today) {
-                f.classList.add('dying');
-                sendReminder();
-            } else {
-                f.classList.remove('dying');
-            }
+            if (localData.lastDate !== today) { f.classList.add('dying'); } 
+            else { f.classList.remove('dying'); }
         }
 
         window.burn = function() {
             const today = new Date().toDateString();
             if (localData.lastDate === today) return;
-            
             const newStreak = localData.streak + 1;
             set(flameRef, { streak: newStreak, lastDate: today });
-            
-            // Вибрация на твоем ASUS ROG или телефоне
-            if (window.Telegram?.WebApp?.HapticFeedback) {
-                window.Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
-            }
+            USER_IDS.forEach(id => {
+                fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${id}&text=${encodeURIComponent("🔥 Огонек зажжен! Наша серия: " + newStreak)}`);
+            });
         };
     </script>
 </body>
