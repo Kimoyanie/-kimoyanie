@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Our Flame - Pure</title>
+    <title>Our Flame - Together</title>
     <style>
         :root { 
             --bg-color: #000; --text-color: #fff; --my-border: #8A2BE2; --her-border: #FF69B4; 
@@ -21,7 +21,7 @@
         }
         .bg-pattern { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.25; pointer-events: none; }
         
-        /* Паттерн лапок и крыс */
+        /* Лапки и крысы */
         body:not(.light-theme) .bg-pattern { background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform='translate(10,10)'%3E%3Ccircle cx='10' cy='10' r='5' fill='white'/%3E%3Ccircle cx='10' cy='10' r='3' fill='%23FFD700'/%3E%3Ccircle cx='6' cy='4' r='2' fill='white'/%3E%3Ccircle cx='10' cy='2' r='2' fill='white'/%3E%3Ccircle cx='14' cy='4' r='2' fill='white'/%3E%3C/g%3E%3Cg transform='translate(60,60)'%3E%3Cellipse cx='10' cy='10' rx='8' ry='5' fill='white'/%3E%3Cpath d='M18,10 Q25,5 25,15' stroke='%23FF1493' fill='none' stroke-width='1.5'/%3E%3C/g%3E%3C/svg%3E"); }
         body.light-theme .bg-pattern { background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform='translate(10,10)'%3E%3Ccircle cx='10' cy='10' r='5' fill='black'/%3E%3Ccircle cx='10' cy='10' r='3' fill='%23FF69B4'/%3E%3Ccircle cx='6' cy='4' r='2' fill='black'/%3E%3Ccircle cx='10' cy='2' r='2' fill='black'/%3E%3Ccircle cx='14' cy='4' r='2' fill='black'/%3E%3C/g%3E%3Cg transform='translate(60,60)'%3E%3Cellipse cx='10' cy='10' rx='8' ry='5' fill='black'/%3E%3Cpath d='M18,10 Q25,5 25,15' stroke='%23FF1493' fill='none' stroke-width='1.5'/%3E%3C/g%3E%3C/svg%3E"); }
 
@@ -51,15 +51,19 @@
     <div id="settings-panel">
         <h3 style="text-align: center;">Настройки</h3>
         <button onclick="toggleTheme()">Сменить День/Ночь</button>
-        <p style="font-size: 12px; opacity: 0.6; text-align: center;">Аватарки обновляются через GitHub</p>
+        <p style="font-size: 12px; opacity: 0.6; text-align: center; margin-top: 20px;">
+            Для смены фото замени файлы avatar_me.png и avatar_her.png в GitHub
+        </p>
         <button onclick="document.getElementById('settings-panel').classList.remove('open')" style="margin-top:auto; background: #444;">Закрыть</button>
     </div>
 
     <div class="bg-pattern"></div>
     <div class="container">
         <div style="display:flex; gap:20px; justify-content:center; margin-bottom:30px;">
-            <div class="her"><img src="avatar_her.png" class="avatar"></div>
+            <!-- Твоя ава (теперь слева, смотришь на неё) -->
             <div class="me"><img src="avatar_me.png" class="avatar"></div>
+            <!-- Её ава (теперь справа, смотрит на тебя) -->
+            <div class="her"><img src="avatar_her.png" class="avatar"></div>
         </div>
         <div id="flame" onclick="burn()">🔥</div>
         <div id="counter" style="font-size:70px; font-weight:bold;">0</div>
@@ -96,7 +100,7 @@
         };
         if(localStorage.getItem('f_theme') === 'light') document.body.classList.add('light-theme');
 
-        // Слушаем базу
+        // Слушаем изменения в реальном времени
         onValue(flameRef, (snapshot) => {
             const data = snapshot.val();
             if (data) { localData = data; }
@@ -116,6 +120,7 @@
             if (localData.lastDate === today) return;
             const newStreak = localData.streak + 1;
             set(flameRef, { streak: newStreak, lastDate: today });
+            
             USER_IDS.forEach(id => {
                 fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${id}&text=${encodeURIComponent("🔥 Огонек зажжен! Наша серия: " + newStreak)}`);
             });
