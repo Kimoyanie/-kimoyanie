@@ -8,123 +8,114 @@
         :root {
             --bg-color: #000;
             --text-color: #fff;
-            --user-border: #8A2BE2; /* Твой фиолетовый */
-            --her-border: #FF69B4;  /* Ее розовый */
-            --paw-color: #FFD700;   /* Желтые подушечки лапок */
-            --rat-color: #fff;      /* Белые крысы */
-            --tail-color: #FF1493;  /* Розовые хвосты */
+            --my-border: #8A2BE2; /* Твой фиолетовый */
+            --her-border: #FF69B4; /* Ее розовый */
+            
+            /* Темная тема: желтые подушечки, белые крысы */
+            --paw-pad: %23FFD700; 
+            --rat-body: %23ffffff;
+            --tail-color: %23FF1493;
         }
 
         body.light-theme {
             --bg-color: #fff;
             --text-color: #000;
-            --paw-color: #FF69B4;
-            --rat-color: #333;
+            
+            /* Светлая тема: розовые подушечки, черные крысы */
+            --paw-pad: %23FF69B4;
+            --rat-body: %23000000;
+            --tail-color: %23FF1493;
         }
 
         body {
             margin: 0; padding: 0;
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             height: 100vh; overflow: hidden;
-            transition: background 0.5s ease;
+            transition: background 0.4s ease;
         }
 
-        /* Улучшенный фон с лапками и крысами */
-        .background-pattern {
+        /* Фон с лапками и крысами через динамический SVG */
+        .bg-pattern {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 1; opacity: 0.15; pointer-events: none;
-            background-image: 
-                /* Рисуем лапку (подушечки) */
-                radial-gradient(circle at 20px 20px, var(--paw-color) 3px, transparent 4px),
-                radial-gradient(circle at 28px 25px, var(--paw-color) 3px, transparent 4px),
-                radial-gradient(circle at 12px 25px, var(--paw-color) 3px, transparent 4px),
-                /* Рисуем тельце крысы */
-                ellipse at 60px 70px, var(--rat-color) 12px 8px, transparent 13px,
-                /* Розовый хвост */
-                radial-gradient(circle at 75px 75px, var(--tail-color) 2px, transparent 3px);
-            background-size: 120px 120px;
+            z-index: 1; opacity: 0.25; pointer-events: none;
+        }
+
+        /* Генерируем фон программно для соответствия ТЗ */
+        body:not(.light-theme) .bg-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg id='paw' transform='translate(10,10)'%3E%3Ccircle cx='10' cy='10' r='5' fill='white'/%3E%3Ccircle cx='10' cy='10' r='3' fill='%23FFD700'/%3E%3Ccircle cx='6' cy='4' r='2' fill='white'/%3E%3Ccircle cx='10' cy='2' r='2' fill='white'/%3E%3Ccircle cx='14' cy='4' r='2' fill='white'/%3E%3C/g%3E%3Cg id='rat' transform='translate(60,60)'%3E%3Cellipse cx='10' cy='10' rx='8' ry='5' fill='white'/%3E%3Cpath d='M18,10 Q25,5 25,15' stroke='%23FF1493' fill='none' stroke-width='1.5'/%3E%3Ccircle cx='5' cy='8' r='1.5' fill='black'/%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        body.light-theme .bg-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform='translate(10,10)'%3E%3Ccircle cx='10' cy='10' r='5' fill='black'/%3E%3Ccircle cx='10' cy='10' r='3' fill='%23FF69B4'/%3E%3Ccircle cx='6' cy='4' r='2' fill='black'/%3E%3Ccircle cx='10' cy='2' r='2' fill='black'/%3E%3Ccircle cx='14' cy='4' r='2' fill='black'/%3E%3C/g%3E%3Cg transform='translate(60,60)'%3E%3Cellipse cx='10' cy='10' rx='8' ry='5' fill='black'/%3E%3Cpath d='M18,10 Q25,5 25,15' stroke='%23FF1493' fill='none' stroke-width='1.5'/%3E%3Ccircle cx='5' cy='8' r='1.5' fill='white'/%3E%3C/g%3E%3C/svg%3E");
         }
 
         .container { position: relative; z-index: 10; text-align: center; width: 100%; }
 
-        /* Аватарки с неоновой обводкой */
+        /* Аватарки */
         .avatars { display: flex; gap: 30px; justify-content: center; margin-bottom: 40px; }
-        .avatar-box { position: relative; display: flex; flex-direction: column; align-items: center; }
+        .avatar-box { display: flex; flex-direction: column; align-items: center; }
         .avatar {
-            width: 100px; height: 100px; border-radius: 50%; object-fit: cover;
+            width: 95px; height: 95px; border-radius: 50%; object-fit: cover;
             border: 4px solid var(--her-border);
-            box-shadow: 0 0 25px var(--her-border);
+            box-shadow: 0 0 20px var(--her-border);
         }
         .me .avatar { 
-            border-color: var(--user-border); 
-            box-shadow: 0 0 30px var(--user-border); 
+            border-color: var(--my-border); 
+            box-shadow: 0 0 25px var(--my-border); 
         }
 
-        .nickname { font-size: 14px; margin-top: 10px; font-weight: bold; }
-        .me .nickname { color: var(--user-border); }
-        .her .nickname { color: var(--her-border); }
-
-        /* Огонек и анимация затухания */
-        #flame-btn {
-            font-size: 130px; cursor: pointer;
-            user-select: none; transition: transform 0.2s, filter 0.5s;
-            display: inline-block;
+        /* Огонек */
+        #flame {
+            font-size: 120px; cursor: pointer; user-select: none;
+            transition: transform 0.2s; display: inline-block;
         }
-
-        .dying {
-            animation: bounce-shake 0.8s infinite, flicker 2s infinite alternate;
-        }
+        .active-flame { filter: drop-shadow(0 0 30px orange); }
+        
+        .dying { animation: bounce-shake 0.8s infinite, flicker 2s infinite alternate; }
 
         @keyframes bounce-shake {
-            0%, 100% { transform: translateY(0) rotate(0); }
-            25% { transform: translateY(-5px) rotate(-5deg); }
-            75% { transform: translateY(-5px) rotate(5deg); }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1) rotate(3deg); }
         }
 
         @keyframes flicker {
-            from { filter: brightness(0.6) grayscale(0.5); opacity: 0.7; }
-            to { filter: brightness(1.2) drop-shadow(0 0 40px orange); opacity: 1; }
+            from { opacity: 0.6; filter: grayscale(0.5) brightness(0.7); }
+            to { opacity: 1; filter: grayscale(0) brightness(1.2); }
         }
 
-        .hint { 
-            color: var(--tail-color); font-weight: bold; margin-top: 15px; 
-            font-size: 16px; text-transform: uppercase; display: none;
-        }
-        .dying-mode .hint { display: block; animation: flicker 2s infinite; }
+        .hint { color: #FF1493; font-weight: bold; margin-top: 15px; display: none; }
+        .dying + .hint { display: block; }
 
-        /* Счетчик */
-        #counter { font-size: 80px; font-weight: 900; margin-top: 20px; line-height: 1; }
-        .label { opacity: 0.6; letter-spacing: 3px; font-size: 14px; margin-top: 10px; }
-
-        /* Кнопка настроек */
-        .settings { position: absolute; top: 20px; left: 20px; font-size: 30px; cursor: pointer; opacity: 0.7; z-index: 20; }
+        /* Счетчик и Настройки */
+        #counter { font-size: 80px; font-weight: 900; margin-top: 10px; }
+        .settings { position: absolute; top: 20px; left: 20px; font-size: 28px; cursor: pointer; z-index: 20; opacity: 0.6; }
     </style>
 </head>
 <body>
 
-    <div class="background-pattern"></div>
+    <div class="bg-pattern"></div>
     <div class="settings" onclick="toggleTheme()">⚙️</div>
 
-    <div class="container" id="main-ui">
+    <div class="container">
         <div class="avatars">
-            <div class="avatar-box her">
+            <div class="avatar-box">
                 <img src="avatar_her.png" class="avatar">
-                <div class="nickname">@min_mina368</div>
+                <div style="margin-top:8px; color:var(--her-border); font-weight:bold;">@min_mina368</div>
             </div>
             <div class="avatar-box me">
                 <img src="avatar_me.png" class="avatar">
-                <div class="nickname">@zow6666</div>
+                <div style="margin-top:8px; color:var(--my-border); font-weight:bold;">@zow6666</div>
             </div>
         </div>
 
-        <div id="flame-btn" onclick="activateFlame()">🔥</div>
-        <div class="hint">я тухну зажги меня</div>
+        <div id="flame" onclick="burn()">🔥</div>
+        <div class="hint">Я ТУХНУ ЗАЖГИ МЕНЯ</div>
         
         <div id="counter">0</div>
-        <div class="label">СЕРИЯ ДНЕЙ</div>
+        <div style="opacity: 0.5; letter-spacing: 2px; font-size: 12px;">СЕРИЯ ДНЕЙ</div>
     </div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -132,47 +123,41 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        let streak = parseInt(localStorage.getItem('flame_streak_val')) || 0;
-        let lastClickDate = localStorage.getItem('flame_last_click_date') || "";
+        let streak = parseInt(localStorage.getItem('f_streak')) || 0;
+        let lastClick = localStorage.getItem('f_date') || "";
 
-        function checkStatus() {
+        function updateUI() {
             document.getElementById('counter').innerText = streak;
             const today = new Date().toDateString();
-            const ui = document.getElementById('main-ui');
-            const btn = document.getElementById('flame-btn');
-
-            if (lastClickDate !== today) {
-                ui.classList.add('dying-mode');
-                btn.classList.add('dying');
+            const f = document.getElementById('flame');
+            if (lastClick !== today) {
+                f.classList.add('dying');
             } else {
-                ui.classList.remove('dying-mode');
-                btn.classList.remove('dying');
+                f.classList.remove('dying');
+                f.classList.add('active-flame');
             }
         }
 
-        function activateFlame() {
+        function burn() {
             const today = new Date().toDateString();
-            
-            if (lastClickDate === today) {
-                tg.showAlert("На сегодня огонек уже горит! 🔥");
+            if (lastClick === today) {
+                tg.showAlert("Огонек уже горит! 🔥");
                 return;
             }
-
             streak++;
-            lastClickDate = today;
-            localStorage.setItem('flame_streak_val', streak);
-            localStorage.setItem('flame_last_click_date', lastClickDate);
-            
+            lastClick = today;
+            localStorage.setItem('f_streak', streak);
+            localStorage.setItem('f_date', lastClick);
             tg.HapticFeedback.impactOccurred('heavy');
-            checkStatus();
+            updateUI();
         }
 
         function toggleTheme() {
             document.body.classList.toggle('light-theme');
-            tg.HapticFeedback.impactOccurred('medium');
+            tg.HapticFeedback.impactOccurred('light');
         }
 
-        checkStatus();
+        updateUI();
     </script>
 </body>
 </html>
