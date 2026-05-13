@@ -8,156 +8,116 @@
         :root {
             --bg-color: #000;
             --text-color: #fff;
-            --my-border: #8A2BE2; /* Твой фиолетовый */
-            --her-border: #FF69B4; /* Ее розовый */
-            
-            /* Темная тема: желтые подушечки, белые крысы */
-            --paw-pad: %23FFD700; 
-            --rat-body: %23ffffff;
-            --tail-color: %23FF1493;
+            --my-border: #8A2BE2;
+            --her-border: #FF69B4;
         }
 
         body.light-theme {
             --bg-color: #fff;
             --text-color: #000;
-            
-            /* Светлая тема: розовые подушечки, черные крысы */
-            --paw-pad: %23FF69B4;
-            --rat-body: %23000000;
-            --tail-color: %23FF1493;
         }
 
         body {
             margin: 0; padding: 0;
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             height: 100vh; overflow: hidden;
             transition: background 0.4s ease;
         }
 
-        /* Фон с лапками и крысами через динамический SVG */
         .bg-pattern {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 1; opacity: 0.25; pointer-events: none;
         }
 
-        /* Генерируем фон программно для соответствия ТЗ */
+        /* Твой дизайн фона: лапки и крысы */
         body:not(.light-theme) .bg-pattern {
-            background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg id='paw' transform='translate(10,10)'%3E%3Ccircle cx='10' cy='10' r='5' fill='white'/%3E%3Ccircle cx='10' cy='10' r='3' fill='%23FFD700'/%3E%3Ccircle cx='6' cy='4' r='2' fill='white'/%3E%3Ccircle cx='10' cy='2' r='2' fill='white'/%3E%3Ccircle cx='14' cy='4' r='2' fill='white'/%3E%3C/g%3E%3Cg id='rat' transform='translate(60,60)'%3E%3Cellipse cx='10' cy='10' rx='8' ry='5' fill='white'/%3E%3Cpath d='M18,10 Q25,5 25,15' stroke='%23FF1493' fill='none' stroke-width='1.5'/%3E%3Ccircle cx='5' cy='8' r='1.5' fill='black'/%3E%3C/g%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform='translate(10,10)'%3E%3Ccircle cx='10' cy='10' r='5' fill='white'/%3E%3Ccircle cx='10' cy='10' r='3' fill='%23FFD700'/%3E%3Ccircle cx='6' cy='4' r='2' fill='white'/%3E%3Ccircle cx='10' cy='2' r='2' fill='white'/%3E%3Ccircle cx='14' cy='4' r='2' fill='white'/%3E%3C/g%3E%3Cg transform='translate(60,60)'%3E%3Cellipse cx='10' cy='10' rx='8' ry='5' fill='white'/%3E%3Cpath d='M18,10 Q25,5 25,15' stroke='%23FF1493' fill='none' stroke-width='1.5'/%3E%3C/g%3E%3C/svg%3E");
         }
 
         body.light-theme .bg-pattern {
-            background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform='translate(10,10)'%3E%3Ccircle cx='10' cy='10' r='5' fill='black'/%3E%3Ccircle cx='10' cy='10' r='3' fill='%23FF69B4'/%3E%3Ccircle cx='6' cy='4' r='2' fill='black'/%3E%3Ccircle cx='10' cy='2' r='2' fill='black'/%3E%3Ccircle cx='14' cy='4' r='2' fill='black'/%3E%3C/g%3E%3Cg transform='translate(60,60)'%3E%3Cellipse cx='10' cy='10' rx='8' ry='5' fill='black'/%3E%3Cpath d='M18,10 Q25,5 25,15' stroke='%23FF1493' fill='none' stroke-width='1.5'/%3E%3Ccircle cx='5' cy='8' r='1.5' fill='white'/%3E%3C/g%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform='translate(10,10)'%3E%3Ccircle cx='10' cy='10' r='5' fill='black'/%3E%3Ccircle cx='10' cy='10' r='3' fill='%23FF69B4'/%3E%3Ccircle cx='6' cy='4' r='2' fill='black'/%3E%3Ccircle cx='10' cy='2' r='2' fill='black'/%3E%3Ccircle cx='14' cy='4' r='2' fill='black'/%3E%3C/g%3E%3Cg transform='translate(60,60)'%3E%3Cellipse cx='10' cy='10' rx='8' ry='5' fill='black'/%3E%3Cpath d='M18,10 Q25,5 25,15' stroke='%23FF1493' fill='none' stroke-width='1.5'/%3E%3C/g%3E%3C/svg%3E");
         }
 
-        .container { position: relative; z-index: 10; text-align: center; width: 100%; }
+        .container { position: relative; z-index: 10; text-align: center; }
 
-        /* Аватарки */
-        .avatars { display: flex; gap: 30px; justify-content: center; margin-bottom: 40px; }
-        .avatar-box { display: flex; flex-direction: column; align-items: center; }
         .avatar {
-            width: 95px; height: 95px; border-radius: 50%; object-fit: cover;
+            width: 95px; height: 95px; border-radius: 50%;
             border: 4px solid var(--her-border);
             box-shadow: 0 0 20px var(--her-border);
         }
-        .me .avatar { 
-            border-color: var(--my-border); 
-            box-shadow: 0 0 25px var(--my-border); 
-        }
+        .me .avatar { border-color: var(--my-border); box-shadow: 0 0 25px var(--my-border); }
 
-        /* Огонек */
-        #flame {
-            font-size: 120px; cursor: pointer; user-select: none;
-            transition: transform 0.2s; display: inline-block;
-        }
-        .active-flame { filter: drop-shadow(0 0 30px orange); }
-        
-        .dying { animation: bounce-shake 0.8s infinite, flicker 2s infinite alternate; }
+        #flame { font-size: 110px; cursor: pointer; display: inline-block; transition: 0.3s; }
+        .dying { animation: pulse 2s infinite alternate; filter: grayscale(0.6); }
 
-        @keyframes bounce-shake {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1) rotate(3deg); }
-        }
-
-        @keyframes flicker {
-            from { opacity: 0.6; filter: grayscale(0.5) brightness(0.7); }
-            to { opacity: 1; filter: grayscale(0) brightness(1.2); }
-        }
-
-        .hint { color: #FF1493; font-weight: bold; margin-top: 15px; display: none; }
-        .dying + .hint { display: block; }
-
-        /* Счетчик и Настройки */
-        #counter { font-size: 80px; font-weight: 900; margin-top: 10px; }
-        .settings { position: absolute; top: 20px; left: 20px; font-size: 28px; cursor: pointer; z-index: 20; opacity: 0.6; }
+        @keyframes pulse { from { opacity: 0.6; transform: scale(1); } to { opacity: 1; transform: scale(1.1); } }
     </style>
 </head>
 <body>
 
     <div class="bg-pattern"></div>
-    <div class="settings" onclick="toggleTheme()">⚙️</div>
 
     <div class="container">
-        <div class="avatars">
-            <div class="avatar-box">
-                <img src="avatar_her.png" class="avatar">
-                <div style="margin-top:8px; color:var(--her-border); font-weight:bold;">@min_mina368</div>
-            </div>
-            <div class="avatar-box me">
-                <img src="avatar_me.png" class="avatar">
-                <div style="margin-top:8px; color:var(--my-border); font-weight:bold;">@zow6666</div>
-            </div>
+        <div style="display:flex; gap:20px; justify-content:center; margin-bottom:30px;">
+            <div class="her"><img src="avatar_her.png" class="avatar"></div>
+            <div class="me"><img src="avatar_me.png" class="avatar"></div>
         </div>
 
         <div id="flame" onclick="burn()">🔥</div>
-        <div class="hint">Я ТУХНУ ЗАЖГИ МЕНЯ</div>
-        
-        <div id="counter">0</div>
-        <div style="opacity: 0.5; letter-spacing: 2px; font-size: 12px;">СЕРИЯ ДНЕЙ</div>
+        <div id="counter" style="font-size:70px; font-weight:bold;">0</div>
+        <div style="opacity: 0.5; letter-spacing: 2px;">СЕРИЯ ДНЕЙ</div>
     </div>
 
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
+        // --- ДАННЫЕ ПОДКЛЮЧЕНЫ ---
+        const BOT_TOKEN = '8849874956:AAEFlXTywSZj-hM9UzR26C-VorbRVmQ3Hno'; 
+        const USER_IDS = ['345744792', '1256661742']; 
 
         let streak = parseInt(localStorage.getItem('f_streak')) || 0;
-        let lastClick = localStorage.getItem('f_date') || "";
+        let lastDate = localStorage.getItem('f_date') || "";
 
-        function updateUI() {
+        async function sendTelegramReminder() {
+            const today = new Date().toDateString();
+            const lastSent = localStorage.getItem('last_reminder_sent');
+            
+            if (lastSent === today) return; 
+
+            const text = "🚨 Ваш огонек тухнет! Зажгите его скорее! 🔥";
+
+            for (const id of USER_IDS) {
+                const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${id}&text=${encodeURIComponent(text)}`;
+                try { await fetch(url); } catch (e) { console.error(e); }
+            }
+            localStorage.setItem('last_reminder_sent', today);
+        }
+
+        function checkStatus() {
             document.getElementById('counter').innerText = streak;
             const today = new Date().toDateString();
             const f = document.getElementById('flame');
-            if (lastClick !== today) {
+
+            if (lastDate !== today) {
                 f.classList.add('dying');
+                sendTelegramReminder(); 
             } else {
                 f.classList.remove('dying');
-                f.classList.add('active-flame');
             }
         }
 
         function burn() {
             const today = new Date().toDateString();
-            if (lastClick === today) {
-                tg.showAlert("Огонек уже горит! 🔥");
-                return;
-            }
+            if (lastDate === today) return;
             streak++;
-            lastClick = today;
+            lastDate = today;
             localStorage.setItem('f_streak', streak);
-            localStorage.setItem('f_date', lastClick);
-            tg.HapticFeedback.impactOccurred('heavy');
-            updateUI();
+            localStorage.setItem('f_date', lastDate);
+            checkStatus();
         }
 
-        function toggleTheme() {
-            document.body.classList.toggle('light-theme');
-            tg.HapticFeedback.impactOccurred('light');
-        }
-
-        updateUI();
+        checkStatus();
     </script>
 </body>
 </html>
