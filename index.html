@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Our Flame</title>
+    <style>
+        :root {
+            --bg-color: #000;
+            --text-color: #fff;
+            --user-border: #8A2BE2; /* Фиолетовый для тебя */
+            --her-border: #FF69B4;  /* Розовый для нее */
+            --pattern-color: rgba(255, 215, 0, 0.2); /* Желтые лапки */
+            --rat-color: rgba(255, 255, 255, 0.2);   /* Белые крысы */
+            --tail-color: #FF1493;
+        }
+
+        body.light-theme {
+            --bg-color: #fff;
+            --text-color: #000;
+            --pattern-color: rgba(0, 0, 0, 0.1);    /* Черные лапки */
+            --rat-color: rgba(0, 0, 0, 0.15);       /* Черные крысы */
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', sans-serif;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100vh; overflow: hidden;
+            transition: all 0.5s ease;
+            position: relative;
+        }
+
+        /* Сложный фон с лапками и крысами */
+        .bg-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1; pointer-events: none;
+            background-image: 
+                radial-gradient(circle at 20% 20%, var(--pattern-color) 5px, transparent 10px),
+                radial-gradient(circle at 80% 40%, var(--rat-color) 10px, transparent 15px);
+            background-size: 100px 100px;
+        }
+
+        .container { position: relative; z-index: 10; text-align: center; }
+
+        /* Аватарки */
+        .avatars { display: flex; gap: 30px; margin-bottom: 50px; justify-content: center; }
+        .avatar-box { position: relative; text-align: center; }
+        .avatar {
+            width: 90px; height: 90px; border-radius: 50%; object-fit: cover;
+            border: 4px solid var(--her-border);
+            box-shadow: 0 0 20px var(--her-border);
+        }
+        .me .avatar { 
+            border-color: var(--user-border); 
+            box-shadow: 0 0 25px var(--user-border); 
+        }
+
+        /* Огонек и его анимации */
+        #flame-container { position: relative; display: inline-block; }
+        #flame {
+            font-size: 120px; cursor: pointer;
+            transition: transform 0.2s, filter 0.5s;
+            user-select: none;
+            display: block;
+        }
+        
+        /* Анимация затухания (тряска + пульсация) */
+        .dying {
+            animation: shake 0.6s infinite, pulse 1.5s infinite alternate;
+            filter: grayscale(0.4) brightness(0.8);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(-8deg) scale(1.05); }
+            75% { transform: rotate(8deg) scale(0.95); }
+        }
+
+        @keyframes pulse {
+            from { filter: brightness(0.6) saturate(0.5); }
+            to { filter: brightness(1.2) saturate(1.5) drop-shadow(0 0 30px orange); }
+        }
+
+        .hint-text {
+            color: var(--tail-color); font-weight: bold; margin-top: 15px;
+            font-size: 14px; display: none; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .dying-mode .hint-text { display: block; animation: pulse 1.5s infinite; }
+
+        /* Кнопка настроек */
+        .settings-trigger {
+            position: absolute; top: 25px; right: 25px; font-size: 24px; cursor: pointer; opacity: 0.5;
+        }
+        .settings-trigger:hover { opacity: 1; }
+    </style>
+</head>
+<body id="body">
+
+    <div class="bg-layer"></div>
+    <div class="settings-trigger" onclick="tg.showPopup({title:'Настройки', message:'Тут можно будет менять авы в след. версии! Пока только тема.', buttons:[{id:'t', text:'Сменить тему'}]})">⚙️</div>
+
+    <div class="container" id="main-ui">
+        <div class="avatars">
+            <div class="avatar-box">
+                <img src="avatar_her.png" class="avatar">
+                <div style="font-size: 11px; margin-top: 8px; color: var(--her-border);">@min_mina368</div>
+            </div>
+            <div class="avatar-box me">
+                <img src="avatar_me.png" class="avatar">
+                <div style="font-size: 11px; margin-top: 8px; color: var(--user-border);">@zow6666</div>
+            </div>
+        </div>
+
+        <div id="flame-container">
+            <div id="flame" onclick="tapFlame()">🔥</div>
+        </div>
+        <div class="hint-text">я тухну зажги меня</div>
+        
+        <div style="font-size: 72px; font-weight: 900; margin-top: 25px;" id="streak-val">0</div>
+        <div style="opacity: 0.5; font-size: 14px; letter-spacing: 2px;">СЕРИЯ ДНЕЙ</div>
+    </div>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        let streak = parseInt(localStorage.getItem('flame_streak')) || 0;
+        let lastDate = localStorage.getItem('flame_last_date') || "";
+
+        function refreshApp() {
+            document.getElementById('streak-val').innerText = streak;
+            const today = new Date().toDateString();
+            const container = document.getElementById('main-ui');
+            const flame = document.getElementById('flame');
+
+            if (lastDate !== today) {
+                container.classList.add('dying-mode');
+                flame.classList.add('dying');
+            } else {
+                container.classList.remove('dying-mode');
+                flame.classList.remove('dying');
+            }
+        }
+
+        function tapFlame() {
+            const today = new Date().toDateString();
+            
+            if (lastDate === today) {
+                tg.HapticFeedback.notificationOccurred('warning');
+                tg.showAlert("На сегодня огонек уже зажжен! Отдыхайте ❤️");
+                return;
+            }
+
+            streak++;
+            lastDate = today;
+            localStorage.setItem('flame_streak', streak);
+            localStorage.setItem('flame_last_date', lastDate);
+            
+            tg.HapticFeedback.impactOccurred('heavy');
+            refreshApp();
+        }
+
+        // Слушатель для кнопки темы в попапе
+        tg.onEvent('popupClosed', (data) => {
+            if (data.button_id === 't') {
+                document.body.classList.toggle('light-theme');
+                tg.HapticFeedback.impactOccurred('light');
+            }
+        });
+
+        refreshApp();
+    </script>
+</body>
+</html>
