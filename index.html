@@ -8,108 +8,123 @@
         :root {
             --bg-color: #000;
             --text-color: #fff;
-            --my-border: #8A2BE2; /* Твой фиолетовый */
-            --her-border: #FF69B4; /* Ее розовый */
-            --paw-pad: #FFD700;   /* Желтые подушечки */
-            --rat-body: #fff;     /* Белые крысы */
-            --tail: #FF1493;      /* Розовые хвосты */
+            --user-border: #8A2BE2; /* Твой фиолетовый */
+            --her-border: #FF69B4;  /* Ее розовый */
+            --paw-color: #FFD700;   /* Желтые подушечки лапок */
+            --rat-color: #fff;      /* Белые крысы */
+            --tail-color: #FF1493;  /* Розовые хвосты */
         }
 
         body.light-theme {
             --bg-color: #fff;
             --text-color: #000;
-            --paw-pad: #FF69B4;   /* Розовые подушечки */
-            --rat-body: #000;     /* Черные крысы */
+            --paw-color: #FF69B4;
+            --rat-color: #333;
         }
 
         body {
             margin: 0; padding: 0;
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             height: 100vh; overflow: hidden;
             transition: background 0.5s ease;
         }
 
-        /* Фон с лапками и крысами */
-        .background-overlay {
+        /* Улучшенный фон с лапками и крысами */
+        .background-pattern {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 1; opacity: 0.2; pointer-events: none;
-            /* Здесь мы имитируем паттерн через градиенты */
+            z-index: 1; opacity: 0.15; pointer-events: none;
             background-image: 
-                radial-gradient(circle at 10% 10%, var(--paw-pad) 4px, transparent 8px),
-                radial-gradient(circle at 30% 50%, var(--rat-body) 12px, transparent 15px);
-            background-size: 150px 150px;
+                /* Рисуем лапку (подушечки) */
+                radial-gradient(circle at 20px 20px, var(--paw-color) 3px, transparent 4px),
+                radial-gradient(circle at 28px 25px, var(--paw-color) 3px, transparent 4px),
+                radial-gradient(circle at 12px 25px, var(--paw-color) 3px, transparent 4px),
+                /* Рисуем тельце крысы */
+                ellipse at 60px 70px, var(--rat-color) 12px 8px, transparent 13px,
+                /* Розовый хвост */
+                radial-gradient(circle at 75px 75px, var(--tail-color) 2px, transparent 3px);
+            background-size: 120px 120px;
         }
 
-        .container { position: relative; z-index: 10; text-align: center; }
+        .container { position: relative; z-index: 10; text-align: center; width: 100%; }
 
-        /* Аватарки */
-        .avatars { display: flex; gap: 30px; margin-bottom: 40px; }
-        .avatar-box { position: relative; }
+        /* Аватарки с неоновой обводкой */
+        .avatars { display: flex; gap: 30px; justify-content: center; margin-bottom: 40px; }
+        .avatar-box { position: relative; display: flex; flex-direction: column; align-items: center; }
         .avatar {
-            width: 90px; height: 90px; border-radius: 50%; object-fit: cover;
+            width: 100px; height: 100px; border-radius: 50%; object-fit: cover;
             border: 4px solid var(--her-border);
-            box-shadow: 0 0 20px var(--her-border);
+            box-shadow: 0 0 25px var(--her-border);
         }
         .me .avatar { 
-            border-color: var(--my-border); 
-            box-shadow: 0 0 25px var(--my-border); 
+            border-color: var(--user-border); 
+            box-shadow: 0 0 30px var(--user-border); 
         }
 
-        /* Огонек и его "бумеранг" анимация */
-        #flame {
-            font-size: 110px; cursor: pointer;
-            user-select: none; transition: transform 0.2s;
+        .nickname { font-size: 14px; margin-top: 10px; font-weight: bold; }
+        .me .nickname { color: var(--user-border); }
+        .her .nickname { color: var(--her-border); }
+
+        /* Огонек и анимация затухания */
+        #flame-btn {
+            font-size: 130px; cursor: pointer;
+            user-select: none; transition: transform 0.2s, filter 0.5s;
+            display: inline-block;
         }
-        
+
         .dying {
-            animation: shake 0.6s infinite, dim 2s infinite alternate;
+            animation: bounce-shake 0.8s infinite, flicker 2s infinite alternate;
         }
 
-        @keyframes shake {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-6deg); }
-            75% { transform: rotate(6deg); }
+        @keyframes bounce-shake {
+            0%, 100% { transform: translateY(0) rotate(0); }
+            25% { transform: translateY(-5px) rotate(-5deg); }
+            75% { transform: translateY(-5px) rotate(5deg); }
         }
 
-        @keyframes dim {
-            from { filter: brightness(0.5) grayscale(0.4); opacity: 0.6; }
-            to { filter: brightness(1.2) drop-shadow(0 0 30px orange); opacity: 1; }
+        @keyframes flicker {
+            from { filter: brightness(0.6) grayscale(0.5); opacity: 0.7; }
+            to { filter: brightness(1.2) drop-shadow(0 0 40px orange); opacity: 1; }
         }
 
-        .hint { color: var(--tail); font-weight: bold; margin-top: 10px; display: none; font-size: 14px; }
-        .dying + .hint { display: block; }
+        .hint { 
+            color: var(--tail-color); font-weight: bold; margin-top: 15px; 
+            font-size: 16px; text-transform: uppercase; display: none;
+        }
+        .dying-mode .hint { display: block; animation: flicker 2s infinite; }
+
+        /* Счетчик */
+        #counter { font-size: 80px; font-weight: 900; margin-top: 20px; line-height: 1; }
+        .label { opacity: 0.6; letter-spacing: 3px; font-size: 14px; margin-top: 10px; }
 
         /* Кнопка настроек */
-        .settings-btn {
-            position: absolute; top: 25px; left: 25px; font-size: 26px; cursor: pointer; z-index: 20;
-        }
+        .settings { position: absolute; top: 20px; left: 20px; font-size: 30px; cursor: pointer; opacity: 0.7; z-index: 20; }
     </style>
 </head>
 <body>
 
-    <div class="background-overlay"></div>
-    <div class="settings-btn" onclick="toggleTheme()">⚙️</div>
+    <div class="background-pattern"></div>
+    <div class="settings" onclick="toggleTheme()">⚙️</div>
 
-    <div class="container">
+    <div class="container" id="main-ui">
         <div class="avatars">
-            <div class="avatar-box">
+            <div class="avatar-box her">
                 <img src="avatar_her.png" class="avatar">
-                <div style="font-size: 12px; margin-top: 5px; color: var(--her-border)">@min_mina368</div>
+                <div class="nickname">@min_mina368</div>
             </div>
             <div class="avatar-box me">
                 <img src="avatar_me.png" class="avatar">
-                <div style="font-size: 12px; margin-top: 5px; color: var(--my-border)">@zow6666</div>
+                <div class="nickname">@zow6666</div>
             </div>
         </div>
 
-        <div id="flame" onclick="burn()">🔥</div>
+        <div id="flame-btn" onclick="activateFlame()">🔥</div>
         <div class="hint">я тухну зажги меня</div>
         
-        <div style="font-size: 70px; font-weight: 900; margin-top: 20px;" id="count">0</div>
-        <div style="opacity: 0.5; letter-spacing: 2px;">СЕРИЯ ДНЕЙ</div>
+        <div id="counter">0</div>
+        <div class="label">СЕРИЯ ДНЕЙ</div>
     </div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -117,37 +132,47 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        let streak = parseInt(localStorage.getItem('streak')) || 0;
-        let lastClick = localStorage.getItem('lastClick') || "";
+        let streak = parseInt(localStorage.getItem('flame_streak_val')) || 0;
+        let lastClickDate = localStorage.getItem('flame_last_click_date') || "";
 
-        function update() {
-            document.getElementById('count').innerText = streak;
+        function checkStatus() {
+            document.getElementById('counter').innerText = streak;
             const today = new Date().toDateString();
-            const f = document.getElementById('flame');
-            if (lastClick !== today) f.classList.add('dying');
-            else f.classList.remove('dying');
+            const ui = document.getElementById('main-ui');
+            const btn = document.getElementById('flame-btn');
+
+            if (lastClickDate !== today) {
+                ui.classList.add('dying-mode');
+                btn.classList.add('dying');
+            } else {
+                ui.classList.remove('dying-mode');
+                btn.classList.remove('dying');
+            }
         }
 
-        function burn() {
+        function activateFlame() {
             const today = new Date().toDateString();
-            if (lastClick === today) {
-                tg.showAlert("На сегодня огонек зажжен! 🔥");
+            
+            if (lastClickDate === today) {
+                tg.showAlert("На сегодня огонек уже горит! 🔥");
                 return;
             }
+
             streak++;
-            lastClick = today;
-            localStorage.setItem('streak', streak);
-            localStorage.setItem('lastClick', lastClick);
+            lastClickDate = today;
+            localStorage.setItem('flame_streak_val', streak);
+            localStorage.setItem('flame_last_click_date', lastClickDate);
+            
             tg.HapticFeedback.impactOccurred('heavy');
-            update();
+            checkStatus();
         }
 
         function toggleTheme() {
             document.body.classList.toggle('light-theme');
-            tg.HapticFeedback.impactOccurred('light');
+            tg.HapticFeedback.impactOccurred('medium');
         }
 
-        update();
+        checkStatus();
     </script>
 </body>
 </html>
