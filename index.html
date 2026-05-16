@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Our Flame - Forever</title>
+    <title>Our Flame - Together</title>
     <style>
         :root { 
             --bg-color: #000; --text-color: #fff; --my-border: #8A2BE2; --her-border: #FF69B4; 
@@ -76,13 +76,13 @@
             <div class="her"><img src="avatar_her.png" class="avatar"></div>
         </div>
         <div id="flame" onclick="burn()">🔥</div>
-        <div id="counter" style="font-size:70px; font-weight:bold;">43</div>
+        <div id="counter" style="font-size:70px; font-weight:bold;">Загрузка...</div>
         <div style="opacity: 0.5; letter-spacing: 2px;">ОБЩАЯ СЕРИЯ</div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBJlKLfey222tUZbqnXCNHgFv8IwWR2WJk",
@@ -101,7 +101,6 @@
         const BOT_TOKEN = '8849874956:AAEFlXTywSZj-hM9UzR26C-VorbRVmQ3Hno';
         const USER_IDS = ['345744792', '1256661742'];
 
-        // Начальное состояние подстроено под 43 дня общения
         let localData = { streak: 43, lastDate: "" };
         let isLoaded = false;
 
@@ -125,12 +124,19 @@
             }
         }
 
+        // Слушаем изменения
         onValue(flameRef, (snapshot) => {
             const data = snapshot.val();
-            if (data) { 
-                localData = data; 
+            if (data) {
+                // Если в базе число меньше 43, значит произошла ошибка сброса. Исправляем!
+                if (data.streak < 43) {
+                    set(flameRef, { streak: 44, lastDate: data.lastDate || "" });
+                    localData = { streak: 44, lastDate: data.lastDate || "" };
+                } else {
+                    localData = data;
+                }
             } else {
-                // Если в базе пусто, принудительно ставим ваши 43 дня
+                // Если база вообще пустая
                 set(flameRef, { streak: 43, lastDate: "" });
             }
             isLoaded = true;
@@ -142,7 +148,6 @@
             const todayStr = new Date().toDateString();
             const f = document.getElementById('flame');
 
-            // Огонек пульсирует (просит нажатия), если сегодня его еще никто не зажигал
             if (localData.lastDate !== todayStr) {
                 f.classList.add('dying');
             } else {
@@ -152,17 +157,16 @@
 
         window.burn = function() {
             if (!isLoaded) return; 
-            
             const todayStr = new Date().toDateString();
-            // Защита: только 1 нажатие в день на двоих
+            
+            // Если сегодня уже нажимали - просто выходим
             if (localData.lastDate === todayStr) return; 
             
-            // Счетчик только растет (+1 к текущему значению из базы), сброса больше НЕТ
-            const newStreak = (localData.streak || 43) + 1; 
+            // Просто прибавляем 1 к тому, что есть в базе. Сброса в 0 НЕТ.
+            const newStreak = Number(localData.streak) + 1;
             
             set(flameRef, { streak: newStreak, lastDate: todayStr });
             
-            // Запуск салюта из сердечек
             if (newStreak % 10 === 0) {
                 createConfetti(100, true); 
             } else {
