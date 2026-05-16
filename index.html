@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Our Flame - Together</title>
+    <title>Our Flame - Forever</title>
     <style>
         :root { 
             --bg-color: #000; --text-color: #fff; --my-border: #8A2BE2; --her-border: #FF69B4; 
@@ -21,7 +21,6 @@
         }
         .bg-pattern { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.25; pointer-events: none; }
         
-        /* Лапки и крысы */
         body:not(.light-theme) .bg-pattern { background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform='translate(10,10)'%3E%3Ccircle cx='10' cy='10' r='5' fill='white'/%3E%3Ccircle cx='10' cy='10' r='3' fill='%23FFD700'/%3E%3Ccircle cx='6' cy='4' r='2' fill='white'/%3E%3Ccircle cx='10' cy='2' r='2' fill='white'/%3E%3Ccircle cx='14' cy='4' r='2' fill='white'/%3E%3C/g%3E%3Cg transform='translate(60,60)'%3E%3Cellipse cx='10' cy='10' rx='8' ry='5' fill='white'/%3E%3Cpath d='M18,10 Q25,5 25,15' stroke='%23FF1493' fill='none' stroke-width='1.5'/%3E%3C/g%3E%3C/svg%3E"); }
         body.light-theme .bg-pattern { background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform='translate(10,10)'%3E%3Ccircle cx='10' cy='10' r='5' fill='black'/%3E%3Ccircle cx='10' cy='10' r='3' fill='%23FF69B4'/%3E%3Ccircle cx='6' cy='4' r='2' fill='black'/%3E%3Ccircle cx='10' cy='2' r='2' fill='black'/%3E%3Ccircle cx='14' cy='4' r='2' fill='black'/%3E%3C/g%3E%3Cg transform='translate(60,60)'%3E%3Cellipse cx='10' cy='10' rx='8' ry='5' fill='black'/%3E%3Cpath d='M18,10 Q25,5 25,15' stroke='%23FF1493' fill='none' stroke-width='1.5'/%3E%3C/g%3E%3C/svg%3E"); }
 
@@ -41,8 +40,21 @@
         .avatar { width: 95px; height: 95px; border-radius: 50%; border: 4px solid var(--her-border); box-shadow: 0 0 20px var(--her-border); object-fit: cover; background: #222; }
         .me .avatar { border-color: var(--my-border); box-shadow: 0 0 25px var(--my-border); }
         #flame { font-size: 110px; cursor: pointer; display: inline-block; transition: 0.3s; margin-top: 20px; user-select: none; }
-        .dying { animation: pulse 2s infinite alternate; filter: grayscale(0.6); }
-        @keyframes pulse { from { opacity: 0.6; transform: scale(1); } to { opacity: 1; transform: scale(1.1); } }
+        .dying { animation: pulse 2s infinite alternate; filter: grayscale(0.4); }
+        
+        .confetti {
+            position: fixed;
+            top: -50px;
+            z-index: 9999;
+            pointer-events: none;
+            animation: fall linear forwards;
+        }
+        
+        @keyframes pulse { from { opacity: 0.7; transform: scale(1); } to { opacity: 1; transform: scale(1.08); } }
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -60,13 +72,11 @@
     <div class="bg-pattern"></div>
     <div class="container">
         <div style="display:flex; gap:20px; justify-content:center; margin-bottom:30px;">
-            <!-- Твоя ава (теперь слева, смотришь на неё) -->
             <div class="me"><img src="avatar_me.png" class="avatar"></div>
-            <!-- Её ава (теперь справа, смотрит на тебя) -->
             <div class="her"><img src="avatar_her.png" class="avatar"></div>
         </div>
         <div id="flame" onclick="burn()">🔥</div>
-        <div id="counter" style="font-size:70px; font-weight:bold;">0</div>
+        <div id="counter" style="font-size:70px; font-weight:bold;">43</div>
         <div style="opacity: 0.5; letter-spacing: 2px;">ОБЩАЯ СЕРИЯ</div>
     </div>
 
@@ -91,36 +101,74 @@
         const BOT_TOKEN = '8849874956:AAEFlXTywSZj-hM9UzR26C-VorbRVmQ3Hno';
         const USER_IDS = ['345744792', '1256661742'];
 
-        let localData = { streak: 0, lastDate: "" };
+        // Начальное состояние подстроено под 43 дня общения
+        let localData = { streak: 43, lastDate: "" };
+        let isLoaded = false;
 
-        // Тема
         window.toggleTheme = function() {
             document.body.classList.toggle('light-theme');
             localStorage.setItem('f_theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
         };
         if(localStorage.getItem('f_theme') === 'light') document.body.classList.add('light-theme');
 
-        // Слушаем изменения в реальном времени
+        function createConfetti(amount, isMega) {
+            for (let i = 0; i < amount; i++) {
+                const el = document.createElement('div');
+                el.className = 'confetti';
+                el.innerText = '💘';
+                el.style.left = Math.random() * 100 + 'vw';
+                el.style.fontSize = isMega ? (Math.random() * 40 + 30) + 'px' : (Math.random() * 20 + 20) + 'px';
+                const duration = Math.random() * 2 + 2;
+                el.style.animationDuration = duration + 's';
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), duration * 1000);
+            }
+        }
+
         onValue(flameRef, (snapshot) => {
             const data = snapshot.val();
-            if (data) { localData = data; }
+            if (data) { 
+                localData = data; 
+            } else {
+                // Если в базе пусто, принудительно ставим ваши 43 дня
+                set(flameRef, { streak: 43, lastDate: "" });
+            }
+            isLoaded = true;
             updateUI();
         });
 
         function updateUI() {
             document.getElementById('counter').innerText = localData.streak;
-            const today = new Date().toDateString();
+            const todayStr = new Date().toDateString();
             const f = document.getElementById('flame');
-            if (localData.lastDate !== today) { f.classList.add('dying'); } 
-            else { f.classList.remove('dying'); }
+
+            // Огонек пульсирует (просит нажатия), если сегодня его еще никто не зажигал
+            if (localData.lastDate !== todayStr) {
+                f.classList.add('dying');
+            } else {
+                f.classList.remove('dying');
+            }
         }
 
         window.burn = function() {
-            const today = new Date().toDateString();
-            if (localData.lastDate === today) return;
-            const newStreak = localData.streak + 1;
-            set(flameRef, { streak: newStreak, lastDate: today });
+            if (!isLoaded) return; 
             
+            const todayStr = new Date().toDateString();
+            // Защита: только 1 нажатие в день на двоих
+            if (localData.lastDate === todayStr) return; 
+            
+            // Счетчик только растет (+1 к текущему значению из базы), сброса больше НЕТ
+            const newStreak = (localData.streak || 43) + 1; 
+            
+            set(flameRef, { streak: newStreak, lastDate: todayStr });
+            
+            // Запуск салюта из сердечек
+            if (newStreak % 10 === 0) {
+                createConfetti(100, true); 
+            } else {
+                createConfetti(30, false); 
+            }
+
             USER_IDS.forEach(id => {
                 fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${id}&text=${encodeURIComponent("🔥 Огонек зажжен! Наша серия: " + newStreak)}`);
             });
